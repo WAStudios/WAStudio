@@ -79,18 +79,18 @@ def main():
             print("[WAStudio][ERROR] Failed to create Private table:")
         traceback.print_exc()
 
-    # --- STEP 7: Load and preprocess WeakAuras.lua ---
-    wa_main_path = os.path.join("WeakAuras2", "WeakAuras", "WeakAuras.lua")
+    # --- STEP 7: Load and preprocess WeakAuras.test_lua ---
+    wa_main_path = os.path.join("WeakAuras2", "WeakAuras", "WeakAuras.test_lua")
     if not os.path.exists(wa_main_path):
         if debug_statements:
-            print("[WAStudio][ERROR] WeakAuras.lua not found.")
+            print("[WAStudio][ERROR] WeakAuras.test_lua not found.")
         return
 
     try:
         # Read the full source code from the WeakAuras main Lua file
         with open(wa_main_path, "r", encoding="utf-8") as f:
             if debug_statements:
-                print("[WAStudio] Reading WeakAuras.lua...")
+                print("[WAStudio] Reading WeakAuras.test_lua...")
             wa_lines = f.readlines()
 
         # Strip unsupported top-level vararg lines (e.g., `local AddonName = ...`)

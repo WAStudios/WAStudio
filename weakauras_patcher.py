@@ -14,7 +14,7 @@ def patch_varargs(lua_lines):
           local Private = select(2, ...)
 
       These are fine in WoW's environment, but they are illegal outside of a vararg function
-      (i.e., in a top-level `lua.execute()` context).
+      (i.e., in a top-level `test_lua.execute()` context).
 
     Solution:
       We strip those specific lines out to avoid Lua syntax errors.
@@ -49,10 +49,10 @@ def inject_wrapper(lua_code):
     Wraps the full Lua source code into a named function called `WAStudio_Loader`.
 
     Why:
-      Lua top-level code like WeakAuras.lua is not meant to run directly.
+      Lua top-level code like WeakAuras.test_lua is not meant to run directly.
       We need to wrap it inside a named function so we can invoke it safely with:
-          lua.execute(...)
-          lua.globals().WAStudio_Loader("WeakAuras", Private)
+          test_lua.execute(...)
+          test_lua.globals().WAStudio_Loader("WeakAuras", Private)
 
     Notes:
       - `addonName` and `Private` are standard arguments passed by WoW in real addons.
