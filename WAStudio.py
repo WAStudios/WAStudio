@@ -5,6 +5,7 @@ from stubs.weak_auras_private import inject_weak_auras_private
 from stubs.addon_env import inject_addon_env
 from stubs.sandbox_stubs import inject_sandbox_stubs
 from wa_getlibs import getlibs
+from WASEngine.api.math import register_math
 
 import sys
 import os
@@ -21,8 +22,8 @@ ensure_wase_repo()
 getlibs()
 
 # Import AFTER sys.path adjustment
-from core.engine import WASEngine
-from api.frames import Frame
+from WASEngine.core.engine import WASEngine
+#from WASEngine.api.frames import Frame
 
 # Initialize WASEngine
 engine = WASEngine()
@@ -47,10 +48,23 @@ lib_files = sorted(glob.glob('./libs/**/*.lua', recursive=True))
 priority_files = [f for f in lib_files if 'ChatThrottleLib.lua' in f]
 other_files = [f for f in lib_files if 'ChatThrottleLib.lua' not in f]
 
+# Load Lua Files
 for lib_file in priority_files + other_files:
+    print(f"--- Checking math before loading {lib_file} ---")
+
+    # Re-inject math to ensure it's available
+    register_math(lua_runtime)
+
+    try:
+        print("math.min pre-load:", lua_runtime.execute("return math.min(5, 4)"))
+    except Exception as e:
+        print(f"math.min missing before {lib_file}: {e}")
+
     with open(lib_file, 'r', encoding='utf-8') as f:
         print(f"Loading {lib_file}...")
         lua_runtime.execute(f.read())
+
+    print(f"--- Finished loading {lib_file} ---\n")
 
 
 # Load WeakAuras Files with Special Handling for WeakAuras.lua
