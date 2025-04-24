@@ -1,7 +1,4 @@
-# WASEngine is installed in editable mode, no need to list it here unless used differently.
+git+https://github.com/WAStudios/WASEngine.git@main#egg=WASEngine
 lupa
 gdown
-# Optional: Add a GUI framework, depending on your choice
-# tkinter (comes with Python, no pip install needed)
-# pygame (if you want canvas-based GUI)
-# pyqt5 (if going for advanced GUI)
+pygame  # Or tkinter/pyqt5 depending on GUI choice

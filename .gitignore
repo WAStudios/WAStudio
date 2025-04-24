@@ -4,3 +4,5 @@
 # Ignore default python things
 __pycache__
 .idea
+WASEngine/
+WeakAuras2/
