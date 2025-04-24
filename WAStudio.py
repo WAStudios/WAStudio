@@ -1,4 +1,4 @@
-from get_dependencies import ensure_wa_repo, ensure_wase_repo
+from get_dependencies import ensure_wa_repo
 from stubs.libstub import inject_libstub
 from stubs.wow_api import inject_wow_api
 from stubs.weak_auras_private import inject_weak_auras_private
@@ -18,7 +18,7 @@ if wase_path not in sys.path:
 
 # Step 1: Ensure latest WeakAuras2, WASEngine repos and WeakAuras Libraries
 ensure_wa_repo()
-ensure_wase_repo()
+#ensure_wase_repo()
 getlibs()
 
 # Import AFTER sys.path adjustment

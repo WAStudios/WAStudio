@@ -17,9 +17,9 @@ def ensure_repo(repo_url, clone_path):
 def ensure_wa_repo():
     ensure_repo("https://github.com/WeakAuras/WeakAuras2.git", "./WeakAuras2")
 
-def ensure_wase_repo():
-    ensure_repo("https://github.com/WAStudios/WASEngine.git", "./WASEngine")
+#def ensure_wase_repo():
+#    ensure_repo("https://github.com/WAStudios/WASEngine.git", "./WASEngine")
 
 if __name__ == "__main__":
     ensure_wa_repo()
-    ensure_wase_repo()
+#    ensure_wase_repo()
