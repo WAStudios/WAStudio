@@ -1,35 +1,32 @@
-# WAStudio/WAStudio.py
-
 from get_dependencies import ensure_wa_repo, ensure_wase_repo
+from stubs.libstub import inject_libstub
+from stubs.wow_api import inject_wow_api
+from stubs.weak_auras_private import inject_weak_auras_private
+from stubs.addon_env import inject_addon_env
 import sys
 import os
 
-# Step 1: Ensure latest WeakAuras2 and WASEngine
+# Ensure dependencies
 ensure_wa_repo()
 ensure_wase_repo()
 
-# Step 2: Add local WASEngine to Python path
+# Import WASEngine
 wase_path = os.path.abspath("./WASEngine")
 if wase_path not in sys.path:
     sys.path.append(wase_path)
-
 from core.engine import WASEngine
 
-# Step 3: Initialize WASEngine
+# Initialize WASEngine
 engine = WASEngine()
 lua_runtime = engine.lua
 lua_globals = lua_runtime.globals()
 
-# Step 4: Bootstrap Required WoW Globals for WeakAuras
-lua_runtime.execute("""
-WeakAuras = WeakAuras or {}
-function GetAddOnMetadata(addon, field)
-    return "FakeMetaData"
-end
-function IsAddOnLoaded(addon)
-    return true
-end
-""")
+# Inject Stubs
+#inject_libstub(lua_runtime)
+#inject_wow_api(lua_runtime)
+#inject_weak_auras_private(lua_runtime)
+#inject_addon_env(lua_runtime)
+
 
 # Step 5: Load WeakAuras Lua Files
 def load_wa_lua_files(lua_env, base_path="WeakAuras2/WeakAuras"):
