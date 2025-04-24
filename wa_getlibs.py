@@ -1,8 +1,14 @@
-# WAStudio/wa_getlibs.py
-
 import os
 import subprocess
 import yaml
+
+def valid_refs(target_path):
+    """Returns a list of valid remote refs (branches and tags)."""
+    result = subprocess.run(
+        ["git", "-C", target_path, "ls-remote", "--heads", "--tags", "origin"], capture_output=True, text=True, check=True
+    )
+    refs = [line.split()[1].replace('refs/heads/', '').replace('refs/tags/', '') for line in result.stdout.splitlines()]
+    return refs
 
 def getlibs():
     pkgmeta_path = "./WeakAuras2/.pkgmeta"
@@ -30,10 +36,10 @@ def getlibs():
         target_path = os.path.join(libs_dir, os.path.basename(path))
         if isinstance(data, str):
             url = data
-            branch = None
+            branch_or_tag = None
         elif isinstance(data, dict):
             url = data.get("url")
-            branch = data.get("tag") or data.get("commit")
+            branch_or_tag = data.get("tag") or data.get("commit")
         else:
             print(f"Unknown format for {path}, skipping.")
             continue
@@ -41,14 +47,31 @@ def getlibs():
         if os.path.exists(target_path):
             if os.path.exists(os.path.join(target_path, ".git")):
                 print(f"Updating existing git repo {url} in {target_path}...")
+
                 try:
-                    subprocess.run(["git", "-C", target_path, "pull"], check=True)
-                except subprocess.CalledProcessError:
-                    print(f"Git pull failed for {target_path}, attempting to reset to origin/HEAD...")
-                    subprocess.run(["git", "-C", target_path, "fetch"], check=True)
-                    subprocess.run(["git", "-C", target_path, "reset", "--hard", "origin/HEAD"], check=True)
-                if branch and branch.lower() not in ("head", "default"):
-                    subprocess.run(["git", "-C", target_path, "checkout", branch], check=True)
+                    # Fetch latest refs
+                    refs = valid_refs(target_path)
+
+                    # Check if the repo is on a branch or detached HEAD
+                    result = subprocess.run(["git", "-C", target_path, "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True, check=True)
+                    current_branch = result.stdout.strip()
+
+                    if current_branch == "HEAD":
+                        print(f"{target_path} is in a detached HEAD state, resetting...")
+                        subprocess.run(["git", "-C", target_path, "fetch"], check=True)
+
+                        if branch_or_tag in refs:
+                            subprocess.run(["git", "-C", target_path, "checkout", branch_or_tag], check=True)
+                        else:
+                            fallback = "master" if "master" in refs else "main"
+                            subprocess.run(["git", "-C", target_path, "reset", "--hard", f"origin/{fallback}"], check=True)
+                            subprocess.run(["git", "-C", target_path, "checkout", fallback], check=True)
+                    else:
+                        print(f"Pulling latest changes on branch {current_branch} for {target_path}...")
+                        subprocess.run(["git", "-C", target_path, "pull"], check=True)
+
+                except subprocess.CalledProcessError as e:
+                    print(f"Git operation failed for {target_path}: {e}")
                 continue
             elif os.path.exists(os.path.join(target_path, ".svn")):
                 print(f"Updating existing svn repo {url} in {target_path}...")
@@ -58,10 +81,10 @@ def getlibs():
         if "townlong-yak.com" in url or url.endswith(".git") or "github.com" in url:
             print(f"Cloning git repo {url} into {target_path}...")
             git_clone_cmd = ["git", "clone", url, target_path]
-            if branch and branch.lower() not in ("head", "default"):
-                git_clone_cmd.insert(4, "--branch")
-                git_clone_cmd.insert(5, branch)
             subprocess.run(git_clone_cmd, check=True)
+            if branch_or_tag:
+                print(f"Checking out {branch_or_tag} in {target_path}...")
+                subprocess.run(["git", "-C", target_path, "checkout", branch_or_tag], check=True)
         else:
             print(f"Checking out svn repo {url} into {target_path}...")
             subprocess.run(["svn", "checkout", url, target_path], check=True)
