@@ -4,18 +4,21 @@ from stubs.wow_api import inject_wow_api
 from stubs.weak_auras_private import inject_weak_auras_private
 from stubs.addon_env import inject_addon_env
 from stubs.sandbox_stubs import inject_sandbox_stubs
+from wa_getlibs import getlibs
 
 import sys
 import os
+import glob
 
 # Ensure WASEngine is recognized properly in sys.path
 wase_path = os.path.abspath("./WASEngine")
 if wase_path not in sys.path:
     sys.path.insert(0, wase_path)
 
-# Step 1: Ensure latest WeakAuras2 and WASEngine repos
+# Step 1: Ensure latest WeakAuras2, WASEngine repos and WeakAuras Libraries
 ensure_wa_repo()
 ensure_wase_repo()
+getlibs()
 
 # Import AFTER sys.path adjustment
 from core.engine import WASEngine
@@ -28,16 +31,26 @@ lua_globals = lua_runtime.globals()
 
 # Force-inject IsRetail
 lua_runtime.execute("""
-_G.IsRetail = function() return true end
-IsRetail = _G.IsRetail
-""")
+  _G.IsRetail = function() return true end
+  IsRetail = _G.IsRetail
+  """)
 
 # Inject Stubs
+inject_sandbox_stubs(lua_runtime)
 inject_libstub(lua_runtime)
 inject_wow_api(lua_runtime)
 inject_weak_auras_private(lua_runtime)
 inject_addon_env(lua_runtime)
-inject_sandbox_stubs(lua_runtime)
+
+lib_files = sorted(glob.glob('./libs/**/*.lua', recursive=True))
+# Prioritize ChatThrottleLib if embedded
+priority_files = [f for f in lib_files if 'ChatThrottleLib.lua' in f]
+other_files = [f for f in lib_files if 'ChatThrottleLib.lua' not in f]
+
+for lib_file in priority_files + other_files:
+    with open(lib_file, 'r', encoding='utf-8') as f:
+        print(f"Loading {lib_file}...")
+        lua_runtime.execute(f.read())
 
 
 # Load WeakAuras Files with Special Handling for WeakAuras.lua
@@ -90,7 +103,6 @@ def load_wa_lua_files(lua_env, base_path="WeakAuras2/WeakAuras"):
                     lua_env.execute(f.read())
         else:
             print(f"{file} not found!")
-
 
 # Load Lua Files
 load_wa_lua_files(lua_runtime)

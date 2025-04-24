@@ -1,4 +1,6 @@
 git+https://github.com/WAStudios/WASEngine.git@main#egg=WASEngine
 lupa
 gdown
+GitPython
+pyyaml
 pygame  # Or tkinter/pyqt5 depending on GUI choice
