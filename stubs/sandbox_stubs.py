@@ -23,6 +23,10 @@ def inject_sandbox_stubs(lua_runtime):
     C_AddOns = _G.C_AddOns
     C_AddOns.IsAddOnLoaded = function(name) return true end
     C_AddOns.LoadAddOn = function(name) return true end
+    
+    function IsRetail()
+        return true  -- WAStudio emulates Retail for now
+    end
 
     -- SlashCmdList stub
     _G.SlashCmdList = _G.SlashCmdList or {}
