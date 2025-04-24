@@ -5,7 +5,8 @@ from stubs.weak_auras_private import inject_weak_auras_private
 from stubs.addon_env import inject_addon_env
 from stubs.sandbox_stubs import inject_sandbox_stubs
 from wa_getlibs import getlibs
-from WASEngine.api.math import register_math
+from WASEngine.wase_api.math import register_math
+from WASEngine.core.engine import WASEngine
 
 import sys
 import os
