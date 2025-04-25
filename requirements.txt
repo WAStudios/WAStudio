@@ -1,4 +1,4 @@
-git+https://github.com/WAStudios/WASEngine.git@main#egg=WASEngine
+wasengine==1.0.0
 lupa
 gdown
 GitPython

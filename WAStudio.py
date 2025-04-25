@@ -5,8 +5,8 @@ from stubs.weak_auras_private import inject_weak_auras_private
 from stubs.addon_env import inject_addon_env
 from stubs.sandbox_stubs import inject_sandbox_stubs
 from wa_getlibs import getlibs
-from WASEngine.wase_api.math import register_math
-from WASEngine.core.engine import WASEngine
+from wase_core.engine import WASEngine
+from wase_api.math import register_math
 
 import sys
 import os
@@ -21,10 +21,6 @@ if wase_path not in sys.path:
 ensure_wa_repo()
 #ensure_wase_repo()
 getlibs()
-
-# Import AFTER sys.path adjustment
-from WASEngine.core.engine import WASEngine
-#from WASEngine.api.frames import Frame
 
 # Initialize WASEngine
 engine = WASEngine()
