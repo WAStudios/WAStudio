@@ -1,5 +1,5 @@
 # Ignore these files, they shouldn't go on github.
-
+generate_filenames_hash.py
 
 # Ignore default python things
 __pycache__
@@ -7,3 +7,4 @@ __pycache__
 WASEngine/
 WeakAuras2/
 libs/*
+wase_data/*
