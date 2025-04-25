@@ -1,4 +1,4 @@
-wasengine==1.0.9
+wasengine==1.0.11
 lupa
 gdown
 GitPython
